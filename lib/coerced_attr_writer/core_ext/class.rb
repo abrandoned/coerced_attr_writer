@@ -4,6 +4,7 @@ class Class
 
     attributes.each do |attribute|
       java_setter_name = _coerced_setter_name(attribute)
+      camel_writer_name = _coerced_camel_writer_name(attribute)
       coercion_type = "#{setter_methods[java_setter_name]}"      
 
       class_eval <<-RUBY, __FILE__, __LINE__ + 1
@@ -13,6 +14,10 @@ class Class
           end
 
           set_#{attribute}(val)
+        end
+
+        def #{camel_writer_name}=(val)
+          #{attribute} = val
         end
       RUBY
     end
@@ -38,9 +43,23 @@ class Class
   end
 
   def _coerced_setter_name(attribute)
-    string = attribute.to_s.dup
-    string = string.split(/[^a-z0-9]/i).map { |word| word.capitalize }.join
+    string = _coerced_camelize(attribute.to_s)
+
     return "set#{string}"
+  end
+
+  def _coerced_camel_writer_name(attribute)
+    string = _coerced_camelize(attribute.to_s)
+    string[0] = string[0].downcase
+
+    return string
+  end
+
+  def _coerced_camelize(string)
+    local_string = string.to_s.dup
+    local_string = local_string.split(/[^a-z0-9]/i).map { |word| word.capitalize }.join
+
+    return local_string
   end
 
 end
