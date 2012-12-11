@@ -15,11 +15,21 @@ class Class
 
           set_#{attribute}(val)
         end
-
-        def #{camel_writer_name}=(val)
-          #{attribute} = val
-        end
       RUBY
+
+      # Do not want to overwrite the first with the second
+      # if this is a simple setter
+      unless "#{attribute}" == camel_writer_name
+        class_eval <<-RUBY, __FILE__, __LINE__ + 1
+          def #{camel_writer_name}=(val)
+            unless val.is_a?(#{coercion_type})
+              val = val.to_java(#{coercion_type})
+            end
+
+            set_#{attribute}(val)
+          end
+        RUBY
+      end
     end
   end
 
