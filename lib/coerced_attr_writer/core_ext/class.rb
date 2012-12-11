@@ -8,26 +8,26 @@ class Class
       coercion_type = "#{setter_methods[java_setter_name]}"      
 
       class_eval <<-RUBY, __FILE__, __LINE__ + 1
-        def #{attribute}=(val)
-          unless val.is_a?(#{coercion_type})
-            val = val.to_java(#{coercion_type})
-          end
-
-          set_#{attribute}(val)
-        end
+        def #{attribute}=(val)                      # def user_id=(val)
+          unless val.is_a?(#{coercion_type})        #   unless val.is_a?(java.math.BigDecimal)
+            val = val.to_java(#{coercion_type})     #     val = val.to_java(java.math.BigDecimal)
+          end                                       #   end
+                                                    #
+          set_#{attribute}(val)                     #   set_user_id(val)
+        end                                         # end
       RUBY
 
       # Do not want to overwrite the first with the second
       # if this is a simple setter
       unless "#{attribute}" == camel_writer_name
         class_eval <<-RUBY, __FILE__, __LINE__ + 1
-          def #{camel_writer_name}=(val)
-            unless val.is_a?(#{coercion_type})
-              val = val.to_java(#{coercion_type})
-            end
-
-            set_#{attribute}(val)
-          end
+          def #{camel_writer_name}=(val)            # def userId=(val)
+            unless val.is_a?(#{coercion_type})      #   unless val.is_a?(java.math.BigDecimal)
+              val = val.to_java(#{coercion_type})   #     val = val.to_java(java.math.BigDecimal)
+            end                                     #   end
+                                                    #
+            set_#{attribute}(val)                   #   set_user_id(val)
+          end                                       # end
         RUBY
       end
     end
