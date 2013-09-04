@@ -1,6 +1,11 @@
 # CoercedAttrWriter
 
-TODO: Write a gem description
+Uses `to_java` coercion mechanism to convert ruby objects to native java objects when an attribute is assigned.
+
+[Coercion Syntax](https://github.com/abrandoned/jruby_coercion)
+
+The primary purpose here is reopening a java class that has been defined previously (such as JAX-WS classes) and adding
+support for type coercion when being set to a Ruby Object.
 
 ## Installation
 
@@ -18,7 +23,18 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+```ruby
+  class Java::ComSomeObjectNamespaceSequence::Request
+    coerced_attr_writer :property
+  end
+```
+
+When coerced_attr_writer is encountered this extension will reflect on the setters of the java class and find the
+appropriate types that can be used to set `property` by looking for `setProperty(Type)`
+
+When a ruby object is assigned to the property then the `to_java` type coercion registries are inspected for a matching
+coercion before the property is set.
+
 
 ## Contributing
 
